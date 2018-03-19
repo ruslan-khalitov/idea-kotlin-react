@@ -1,0 +1,57 @@
+<idea-plugin>
+    <id>io.github.snrostov.idea-kotlin-react</id>
+    <name>Kotlin React</name>
+    <vendor email="snrostov@ya.ru" url="http://snrostov.github.io">snrostov</vendor>
+
+    <description><![CDATA[
+Generates React Component builder function.
+    ]]></description>
+
+    <depends>org.jetbrains.kotlin</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection
+                implementationClass="io.github.snrostov.kotlin.react.ide.insepctions.RComponentInspection"
+                displayName="RComponent declaration problems"
+                groupPath="Kotlin,React"
+                groupName="Probable bugs"
+                enabledByDefault="true"
+                level="WARNING"
+                language="kotlin"
+        />
+
+        <localInspection
+                implementationClass="io.github.snrostov.kotlin.react.ide.insepctions.RComponentBuilderExpressionsInspection"
+                displayName="RBuilder.child call problems"
+                groupPath="Kotlin,React"
+                groupName="Probable bugs"
+                enabledByDefault="true"
+                level="WARNING"
+                language="kotlin"
+        />
+
+        <localInspection
+                implementationClass="io.github.snrostov.kotlin.react.ide.insepctions.RPropsInspection"
+                displayName="RProp declaration problems"
+                groupPath="Kotlin,React"
+                groupName="Probable bugs"
+                enabledByDefault="true"
+                level="WARNING"
+                language="kotlin"
+        />
+
+        <localInspection
+                implementationClass="io.github.snrostov.kotlin.react.ide.insepctions.RStateInspection"
+                displayName="RState declaration problems"
+                groupPath="Kotlin,React"
+                groupName="Probable bugs"
+                enabledByDefault="true"
+                level="WARNING"
+                language="kotlin"
+        />
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+</idea-plugin>
