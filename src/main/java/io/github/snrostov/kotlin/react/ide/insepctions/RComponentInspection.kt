@@ -3,9 +3,9 @@ package io.github.snrostov.kotlin.react.ide.insepctions
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
-import io.github.snrostov.kotlin.react.ide.GenerateRComponentBuilderFunction
 import io.github.snrostov.kotlin.react.ide.analyzer.RComponentClass
 import io.github.snrostov.kotlin.react.ide.analyzer.asReactComponent
+import io.github.snrostov.kotlin.react.ide.quickfixes.GenerateRComponentBuilderFunction
 import org.jetbrains.kotlin.idea.caches.resolve.resolveToDescriptorIfAny
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
 import org.jetbrains.kotlin.idea.inspections.SafeDeleteFix
@@ -32,6 +32,14 @@ class RComponentInspection : AbstractKotlinInspection() {
             ProblemHighlightType.WEAK_WARNING,
             GenerateRComponentBuilderFunction(reactComponentClass)
           )
+
+          reactComponentClass.findPropsInterface()?.psi?.nameIdentifier?.let {
+            holder.registerProblem(
+              it, "Missed builder function",
+              ProblemHighlightType.WEAK_WARNING,
+              GenerateRComponentBuilderFunction(reactComponentClass)
+            )
+          }
         } else {
           // see [RComponentBuilderExpressionsInspection] for props initialization inspections.
         }
@@ -88,7 +96,7 @@ class RComponentInspection : AbstractKotlinInspection() {
         stateInitFunction.psi?.nameIdentifier?.let {
           holder.registerProblem(
             it,
-            "All ${reactComponentClass.stateTypeSimpleName} properties should be initialized"
+            "All ${reactComponentClass.stateTypeSimpleName} vars should be initialized"
           )
           // todo(quick fix): Add all missed state initializers from properties
         }

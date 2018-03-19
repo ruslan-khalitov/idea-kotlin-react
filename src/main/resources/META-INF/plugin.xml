@@ -49,6 +49,10 @@ Generates React Component builder function.
                 level="WARNING"
                 language="kotlin"
         />
+
+        <intentionAction>
+            <className>io.github.snrostov.kotlin.react.ide.intentions.DeletePropertyIntention</className>
+        </intentionAction>
     </extensions>
 
     <actions>

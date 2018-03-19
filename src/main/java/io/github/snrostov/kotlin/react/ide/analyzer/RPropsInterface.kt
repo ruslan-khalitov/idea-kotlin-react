@@ -1,11 +1,18 @@
 package io.github.snrostov.kotlin.react.ide.analyzer
 
 import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.find.findUsages.FindUsagesOptions
 import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
+import org.jetbrains.kotlin.idea.findUsages.processAllExactUsages
 import org.jetbrains.kotlin.idea.inspections.SafeDeleteFix
 import org.jetbrains.kotlin.idea.quickfix.RenameIdentifierFix
+import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtSuperTypeList
+import org.jetbrains.kotlin.psi.psiUtil.containingClass
+import org.jetbrains.kotlin.psi.psiUtil.parents
+import org.jetbrains.kotlin.resolve.source.getPsi
 
 val ClassDescriptor.isReactProps
   get() = RPropsInterface.canWrap(this)

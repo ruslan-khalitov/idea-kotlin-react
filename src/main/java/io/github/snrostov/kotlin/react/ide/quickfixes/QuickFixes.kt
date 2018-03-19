@@ -1,4 +1,4 @@
-package io.github.snrostov.kotlin.react.ide
+package io.github.snrostov.kotlin.react.ide.quickfixes
 
 import com.intellij.codeInsight.FileModificationService
 import com.intellij.codeInspection.LocalQuickFix
@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.refactoring.safeDelete.SafeDeleteHandler
 import io.github.snrostov.kotlin.react.ide.analyzer.RComponentBuilderFunction
 import io.github.snrostov.kotlin.react.ide.analyzer.RComponentClass
+import io.github.snrostov.kotlin.react.ide.codegen.RComponentBuilderFunctionGenerator
 import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
 import org.jetbrains.kotlin.psi.KtPsiFactory
 
@@ -61,15 +62,19 @@ class ActualizeRComponentBuilderFunction(val function: RComponentBuilderFunction
 
   override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
     if (!FileModificationService.getInstance().preparePsiElementForWrite(descriptor.psiElement)) return
+    function.actualize()
   }
 }
 
 class GenerateRComponentBuilderFunction(val componentClass: RComponentClass) : LocalQuickFix {
-  override fun getName(): String = "Generate React Component builder function"
+  override fun getName(): String = "Generate Component builder function"
 
   override fun getFamilyName(): String = name
 
   override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
     if (!FileModificationService.getInstance().preparePsiElementForWrite(descriptor.psiElement)) return
+    val psi = componentClass.psi ?: return
+    val function = RComponentBuilderFunctionGenerator(KtPsiFactory(project), componentClass).generate()
+    psi.parent.addAfter(function, psi)
   }
 }

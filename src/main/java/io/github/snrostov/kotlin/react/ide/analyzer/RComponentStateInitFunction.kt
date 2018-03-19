@@ -25,9 +25,9 @@ class RComponentStateInitFunction(
     val pseudoCode = psi.bodyExpression?.getContainingPseudocode(context) ?: return stateProps
 
     val propsState =
-      RStateInitCfgAnalyzer(stateProps, function, componentClass.stateType)
-        .getPropsState(pseudoCode.sinkInstruction)
+      RStateInitAnalyzer(stateProps, function, componentClass.stateType)
+        .getPropsAssigments(pseudoCode.sinkInstruction)
 
-    return stateProps.filter { it !in propsState.initialized }
+    return stateProps.filter { it !in propsState.byProperty.keys }
   }
 }

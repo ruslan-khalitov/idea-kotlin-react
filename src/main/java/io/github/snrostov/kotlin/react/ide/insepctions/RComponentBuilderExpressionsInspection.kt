@@ -2,11 +2,11 @@ package io.github.snrostov.kotlin.react.ide.insepctions
 
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
-import io.github.snrostov.kotlin.react.ide.ActualizeRComponentBuilderFunction
 import io.github.snrostov.kotlin.react.ide.analyzer.RComponentBuilderExpression
 import io.github.snrostov.kotlin.react.ide.analyzer.RPropsInterface
 import io.github.snrostov.kotlin.react.ide.analyzer.React
 import io.github.snrostov.kotlin.react.ide.analyzer.asReactComponent
+import io.github.snrostov.kotlin.react.ide.quickfixes.ActualizeRComponentBuilderFunction
 import io.github.snrostov.kotlin.react.ide.utils.reportOnce
 import org.jetbrains.kotlin.cfg.pseudocode.containingDeclarationForPseudocode
 import org.jetbrains.kotlin.idea.caches.resolve.analyzeWithContent
@@ -33,10 +33,8 @@ class RComponentBuilderExpressionsInspection : AbstractKotlinInspection() {
     }
   }
 
-  private fun visitCall(
-    it: KtCallExpression,
-    holder: ProblemsHolder
-  ) {
+  private fun visitCall(it: KtCallExpression, holder: ProblemsHolder) {
+    // todo(question): performance?
     val context = it.containingDeclarationForPseudocode?.analyzeWithContent() ?: return
     val resolvedCall = it.getResolvedCall(context) ?: return
 
@@ -67,6 +65,7 @@ class RComponentBuilderExpressionsInspection : AbstractKotlinInspection() {
       }
     }
 
+    val hasUnknownPropsAssignments = missedPropAssignments.assignments?.unknownPropsAssignments?.isNotEmpty() ?: false
     var hasUninitializedProperties = false
     var isUninitialisedChildrenUsed = false
 
@@ -106,9 +105,10 @@ class RComponentBuilderExpressionsInspection : AbstractKotlinInspection() {
       isUninitialisedChildrenUsed = true
     }
 
-    if (hasUninitializedProperties || isUninitialisedChildrenUsed) {
+    if (hasUninitializedProperties || isUninitialisedChildrenUsed || hasUnknownPropsAssignments) {
       val message = if (isUninitialisedChildrenUsed) "Children is used in component, but not initialized"
-      else "All ${componentClass.propsTypeSimpleName} values should be initialized"
+      else if (isUninitialisedChildrenUsed) "All ${componentClass.propsTypeSimpleName} vars should be initialized"
+      else "Builder function contains outdated assignments" // hasUnknownPropsAssignments
 
       if (builderFunction != null) {
         // Report at builder function name
@@ -124,6 +124,17 @@ class RComponentBuilderExpressionsInspection : AbstractKotlinInspection() {
           componentClass.psi?.nameIdentifier?.reportOnce {
             holder.registerProblem(
               it, "Outdated builder function",
+              ProblemHighlightType.WEAK_WARNING,
+              ActualizeRComponentBuilderFunction(builderFunction)
+            )
+          }
+        }
+
+        if (hasUnknownPropsAssignments) {
+          // Suggestion to update builder function at RProps interface declaration
+          componentClass.findPropsInterface()?.psi?.nameIdentifier?.let {
+            holder.registerProblem(
+              it, "Component builder function contains outdated assignments",
               ProblemHighlightType.WEAK_WARNING,
               ActualizeRComponentBuilderFunction(builderFunction)
             )

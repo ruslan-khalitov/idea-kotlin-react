@@ -1,7 +1,7 @@
 package io.github.snrostov.kotlin.react.ide.analyzer
 
 import io.github.snrostov.kotlin.react.ide.utils.CfgAnalyzer
-import io.github.snrostov.kotlin.react.ide.utils.PropsStateBuilder
+import io.github.snrostov.kotlin.react.ide.utils.PropAssignmentsBuilder
 import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
 import org.jetbrains.kotlin.cfg.pseudocode.Pseudocode
 import org.jetbrains.kotlin.cfg.pseudocode.instructions.Instruction
@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.types.KotlinType
  *
  * @see CfgAnalyzer
  */
-class RPropsInitCfgAnalyzer(
+class RPropsInitAnalyzer(
   val context: BindingContext,
   val pseudocode: Pseudocode,
   props: List<RJsObjInterface.Property>,
@@ -32,7 +32,7 @@ class RPropsInitCfgAnalyzer(
   val propsByName = props.associateBy { it.name }
 
   override fun visitInstruction(
-    propsState: PropsStateBuilder,
+    propsState: PropAssignmentsBuilder,
     instruction: Instruction
   ) {
     when (instruction) {
@@ -62,7 +62,7 @@ class RPropsInitCfgAnalyzer(
                       // find correspond property
                       // todo: match by descriptor rather then by name
                       val property = propsByName[selector.getReferencedName()]
-                      propsState.addInitializedProp(property)
+                      propsState.addInitializedProp(property, getPropValue(instruction))
                     }
                   }
                 }

@@ -4,6 +4,7 @@ import com.intellij.psi.PsiElement
 import io.github.snrostov.kotlin.react.ide.utils.toLowerCaseFirst
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.idea.refactoring.getContainingScope
+import org.jetbrains.kotlin.idea.search.usagesSearch.descriptor
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtClass
@@ -19,6 +20,12 @@ val ClassDescriptor.asReactComponent
 
 val KotlinType.asReactComponent
   get() = (constructor.declarationDescriptor as ClassDescriptor?)?.asReactComponent
+
+val KtClass.asReactComponent
+  get() = (descriptor as? ClassDescriptor)?.asReactComponent
+
+val PsiElement.asReactComponentClass
+  get() = (this as? KtClass)?.asReactComponent
 
 /** Wrapper for user defined RComponent class */
 class RComponentClass(val kotlinClass: ClassDescriptor) {

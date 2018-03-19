@@ -1,17 +1,26 @@
 package io.github.snrostov.kotlin.react.ide.utils
 
 import com.intellij.codeInspection.ProblemsHolder
-import io.github.snrostov.kotlin.react.ide.SafeDelete
-import io.github.snrostov.kotlin.react.ide.ToVar
+import com.intellij.find.findUsages.FindUsagesOptions
+import io.github.snrostov.kotlin.react.ide.analyzer.RComponentClass
 import io.github.snrostov.kotlin.react.ide.analyzer.RPropsInterface
 import io.github.snrostov.kotlin.react.ide.analyzer.RStateInterface
+import io.github.snrostov.kotlin.react.ide.analyzer.asReactComponentClass
 import io.github.snrostov.kotlin.react.ide.insepctions.RComponentBuilderExpressionsInspection
 import io.github.snrostov.kotlin.react.ide.insepctions.RComponentInspection
 import io.github.snrostov.kotlin.react.ide.insepctions.RPropsInspection
 import io.github.snrostov.kotlin.react.ide.insepctions.RStateInspection
+import io.github.snrostov.kotlin.react.ide.quickfixes.SafeDelete
+import io.github.snrostov.kotlin.react.ide.quickfixes.ToVar
 import org.jetbrains.kotlin.descriptors.*
+import org.jetbrains.kotlin.idea.findUsages.KotlinClassFindUsagesOptions
+import org.jetbrains.kotlin.idea.findUsages.processAllExactUsages
+import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.KtSuperTypeList
 import org.jetbrains.kotlin.psi.KtValVarKeywordOwner
+import org.jetbrains.kotlin.psi.psiUtil.containingClass
+import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 import org.jetbrains.kotlin.resolve.descriptorUtil.isExtension
 import org.jetbrains.kotlin.resolve.source.getPsi
@@ -33,7 +42,30 @@ import org.jetbrains.kotlin.types.TypeSubstitution
  * @see [RStateInterface].
  */
 abstract class RJsObjInterface(val kClass: ClassDescriptor) {
+  val psi
+    get() = kClass.source.getPsi() as? KtClass
+
   abstract val kind: Kind<*>
+
+  fun findComponents(): List<RComponentClass> {
+    val result = mutableListOf<RComponentClass>()
+    val psi = psi ?: return listOf()
+    psi.processAllExactUsages({
+      KotlinClassFindUsagesOptions(psi.project)
+    }) {
+      if (!it.isNonCodeUsage()) {
+        val superTypesList = it.element?.parents?.find { it is KtSuperTypeList } as KtSuperTypeList?
+        if (superTypesList != null) {
+          val componentClass = superTypesList.containingClass()?.asReactComponentClass
+          if (componentClass?.propsType?.constructor?.declarationDescriptor == kClass) {
+            result.add(componentClass)
+          }
+        }
+      }
+    }
+
+    return result
+  }
 
   /**
    * @param holder If specified, all invalid members will be registered as problems
@@ -89,11 +121,13 @@ abstract class RJsObjInterface(val kClass: ClassDescriptor) {
       get() = properties.isEmpty()
   }
 
-  class Property(val declaration: VariableDescriptor) {
+  data class Property(val declaration: VariableDescriptor) {
     val name: String?
       get() = if (declaration.name.isSpecial) null else declaration.name.identifier
 
     val psi get() = (declaration as? DeclarationDescriptorWithSource)?.source?.getPsi() as? KtProperty
+
+    override fun toString() = declaration.toString()
   }
 
   /** RProps or RState type reference and [RJsObjInterface] factory */
