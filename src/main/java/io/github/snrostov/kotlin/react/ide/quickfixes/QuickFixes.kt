@@ -7,8 +7,8 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.project.Project
 import com.intellij.refactoring.safeDelete.SafeDeleteHandler
-import io.github.snrostov.kotlin.react.ide.analyzer.RComponentBuilderFunction
-import io.github.snrostov.kotlin.react.ide.analyzer.RComponentClass
+import io.github.snrostov.kotlin.react.ide.model.RComponentBuilderFunction
+import io.github.snrostov.kotlin.react.ide.model.RComponentClass
 import io.github.snrostov.kotlin.react.ide.codegen.RComponentBuilderFunctionGenerator
 import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
 import org.jetbrains.kotlin.psi.KtPsiFactory

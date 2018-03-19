@@ -1,6 +1,6 @@
 package io.github.snrostov.kotlin.react.ide.codegen
 
-import io.github.snrostov.kotlin.react.ide.analyzer.RComponentClass
+import io.github.snrostov.kotlin.react.ide.model.RComponentClass
 import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtPsiFactory

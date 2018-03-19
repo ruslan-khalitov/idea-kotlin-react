@@ -1,5 +1,6 @@
-package io.github.snrostov.kotlin.react.ide.analyzer
+package io.github.snrostov.kotlin.react.ide.model
 
+import io.github.snrostov.kotlin.react.ide.React
 import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 

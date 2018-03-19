@@ -1,9 +1,9 @@
-package io.github.snrostov.kotlin.react.ide.analyzer
+package io.github.snrostov.kotlin.react.ide.model
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import io.github.snrostov.kotlin.react.ide.codegen.RComponentBuilderFunctionGenerator
-import io.github.snrostov.kotlin.react.ide.utils.PropValue
+import io.github.snrostov.kotlin.react.ide.analyzer.PropValue
 import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.idea.references.mainReference

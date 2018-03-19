@@ -1,7 +1,9 @@
-package io.github.snrostov.kotlin.react.ide.utils
+package io.github.snrostov.kotlin.react.ide.analyzer
 
 import com.intellij.psi.PsiElement
-import io.github.snrostov.kotlin.react.ide.utils.PropAssignments.Companion.BACK_EDGE
+import io.github.snrostov.kotlin.react.ide.analyzer.PropAssignments.Companion.BACK_EDGE
+import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
+import io.github.snrostov.kotlin.react.ide.utils.firstCommonParent
 import org.jetbrains.kotlin.cfg.pseudocode.instructions.Instruction
 import org.jetbrains.kotlin.cfg.pseudocode.instructions.eval.WriteValueInstruction
 import org.jetbrains.kotlin.cfg.pseudocode.instructions.special.SubroutineExitInstruction

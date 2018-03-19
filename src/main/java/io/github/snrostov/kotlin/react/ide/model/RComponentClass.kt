@@ -1,6 +1,7 @@
-package io.github.snrostov.kotlin.react.ide.analyzer
+package io.github.snrostov.kotlin.react.ide.model
 
 import com.intellij.psi.PsiElement
+import io.github.snrostov.kotlin.react.ide.React
 import io.github.snrostov.kotlin.react.ide.utils.toLowerCaseFirst
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.idea.refactoring.getContainingScope

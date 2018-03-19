@@ -1,7 +1,6 @@
 package io.github.snrostov.kotlin.react.ide.analyzer
 
-import io.github.snrostov.kotlin.react.ide.utils.CfgAnalyzer
-import io.github.snrostov.kotlin.react.ide.utils.PropAssignmentsBuilder
+import io.github.snrostov.kotlin.react.ide.React
 import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
 import org.jetbrains.kotlin.cfg.pseudocode.Pseudocode
 import org.jetbrains.kotlin.cfg.pseudocode.instructions.Instruction

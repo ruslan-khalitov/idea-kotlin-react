@@ -1,11 +1,10 @@
 package io.github.snrostov.kotlin.react.ide.utils
 
 import com.intellij.codeInspection.ProblemsHolder
-import com.intellij.find.findUsages.FindUsagesOptions
-import io.github.snrostov.kotlin.react.ide.analyzer.RComponentClass
-import io.github.snrostov.kotlin.react.ide.analyzer.RPropsInterface
-import io.github.snrostov.kotlin.react.ide.analyzer.RStateInterface
-import io.github.snrostov.kotlin.react.ide.analyzer.asReactComponentClass
+import io.github.snrostov.kotlin.react.ide.model.RComponentClass
+import io.github.snrostov.kotlin.react.ide.model.RPropsInterface
+import io.github.snrostov.kotlin.react.ide.model.RStateInterface
+import io.github.snrostov.kotlin.react.ide.model.asReactComponentClass
 import io.github.snrostov.kotlin.react.ide.insepctions.RComponentBuilderExpressionsInspection
 import io.github.snrostov.kotlin.react.ide.insepctions.RComponentInspection
 import io.github.snrostov.kotlin.react.ide.insepctions.RPropsInspection

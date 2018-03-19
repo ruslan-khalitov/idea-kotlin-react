@@ -3,8 +3,8 @@ package io.github.snrostov.kotlin.react.ide.insepctions
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
-import io.github.snrostov.kotlin.react.ide.analyzer.RComponentClass
-import io.github.snrostov.kotlin.react.ide.analyzer.asReactComponent
+import io.github.snrostov.kotlin.react.ide.model.RComponentClass
+import io.github.snrostov.kotlin.react.ide.model.asReactComponent
 import io.github.snrostov.kotlin.react.ide.quickfixes.GenerateRComponentBuilderFunction
 import org.jetbrains.kotlin.idea.caches.resolve.resolveToDescriptorIfAny
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection

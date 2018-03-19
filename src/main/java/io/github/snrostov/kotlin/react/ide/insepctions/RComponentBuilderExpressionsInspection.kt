@@ -2,10 +2,10 @@ package io.github.snrostov.kotlin.react.ide.insepctions
 
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
-import io.github.snrostov.kotlin.react.ide.analyzer.RComponentBuilderExpression
-import io.github.snrostov.kotlin.react.ide.analyzer.RPropsInterface
-import io.github.snrostov.kotlin.react.ide.analyzer.React
-import io.github.snrostov.kotlin.react.ide.analyzer.asReactComponent
+import io.github.snrostov.kotlin.react.ide.model.RComponentBuilderExpression
+import io.github.snrostov.kotlin.react.ide.model.RPropsInterface
+import io.github.snrostov.kotlin.react.ide.React
+import io.github.snrostov.kotlin.react.ide.model.asReactComponent
 import io.github.snrostov.kotlin.react.ide.quickfixes.ActualizeRComponentBuilderFunction
 import io.github.snrostov.kotlin.react.ide.utils.reportOnce
 import org.jetbrains.kotlin.cfg.pseudocode.containingDeclarationForPseudocode

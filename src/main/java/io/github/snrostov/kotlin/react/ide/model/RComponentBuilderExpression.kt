@@ -1,6 +1,8 @@
-package io.github.snrostov.kotlin.react.ide.analyzer
+package io.github.snrostov.kotlin.react.ide.model
 
-import io.github.snrostov.kotlin.react.ide.utils.PropAssignments
+import io.github.snrostov.kotlin.react.ide.React
+import io.github.snrostov.kotlin.react.ide.analyzer.PropAssignments
+import io.github.snrostov.kotlin.react.ide.analyzer.RPropsInitAnalyzer
 import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
 import org.jetbrains.kotlin.cfg.pseudocode.containingDeclarationForPseudocode
 import org.jetbrains.kotlin.cfg.pseudocode.getContainingPseudocode

@@ -1,6 +1,6 @@
 package io.github.snrostov.kotlin.react.ide.utils
 
-import io.github.snrostov.kotlin.react.ide.analyzer.React
+import io.github.snrostov.kotlin.react.ide.React
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.name.FqName

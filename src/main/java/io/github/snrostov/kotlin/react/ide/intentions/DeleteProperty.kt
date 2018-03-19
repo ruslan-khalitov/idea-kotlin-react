@@ -2,8 +2,8 @@ package io.github.snrostov.kotlin.react.ide.intentions
 
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
-import io.github.snrostov.kotlin.react.ide.analyzer.asReactProps
-import io.github.snrostov.kotlin.react.ide.analyzer.isReactProps
+import io.github.snrostov.kotlin.react.ide.model.asReactProps
+import io.github.snrostov.kotlin.react.ide.model.isReactProps
 import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.VariableDescriptor
