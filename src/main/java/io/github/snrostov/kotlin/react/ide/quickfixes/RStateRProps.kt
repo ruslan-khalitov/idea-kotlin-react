@@ -10,6 +10,7 @@ import com.intellij.refactoring.safeDelete.SafeDeleteHandler
 import io.github.snrostov.kotlin.react.ide.codegen.removePropsConstructorArgumentAndSuperTypeCall
 import io.github.snrostov.kotlin.react.ide.codegen.setTypeArgument
 import io.github.snrostov.kotlin.react.ide.model.RPropsInterface
+import io.github.snrostov.kotlin.react.ide.model.RStateInterface
 import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.idea.codeInsight.shorten.performDelayedRefactoringRequests
@@ -66,8 +67,11 @@ class DeleteRJsObjInterface(val kind: RJsObjInterface.Kind<*>) : LocalQuickFix {
           it.propsParameter?.source?.getPsi()?.delete()
         }
         // todo: delete in builder function
-      } else {
+      } else if (kind == RStateInterface) {
         it.setTypeArgument(kind, kind.interfaceType.fqName.toString())
+        it.findStateInitFunctions().forEach {
+          it.psi?.delete()
+        }
       }
     }
 
