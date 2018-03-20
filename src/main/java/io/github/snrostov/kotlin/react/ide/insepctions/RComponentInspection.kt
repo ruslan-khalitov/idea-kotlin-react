@@ -5,24 +5,32 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
 import io.github.snrostov.kotlin.react.ide.model.RComponentClass
 import io.github.snrostov.kotlin.react.ide.model.asReactComponent
+import io.github.snrostov.kotlin.react.ide.quickfixes.AddRComponentPropsConstructorParameter
 import io.github.snrostov.kotlin.react.ide.quickfixes.GenerateRComponentBuilderFunction
 import org.jetbrains.kotlin.idea.caches.resolve.resolveToDescriptorIfAny
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
 import org.jetbrains.kotlin.idea.inspections.SafeDeleteFix
+import org.jetbrains.kotlin.psi.KtParameter
 import org.jetbrains.kotlin.psi.classVisitor
+import org.jetbrains.kotlin.resolve.source.getPsi
 
 /**
  * @see [RComponentBuilderExpressionsInspection] for props initialization inspections.
  */
 class RComponentInspection : AbstractKotlinInspection() {
-  // todo(inspection): RProps interface is declared but not passed to component constructor
-
   override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
     classVisitor {
       val nameIdentifier = it.nameIdentifier ?: return@classVisitor
       val classDescriptor = it.resolveToDescriptorIfAny() ?: return@classVisitor
       val reactComponentClass = classDescriptor.asReactComponent
       if (reactComponentClass != null) {
+        if (reactComponentClass.hasProps && !reactComponentClass.isPropsPassedInConstructor()) {
+          holder.registerProblem(
+            nameIdentifier, "Props not passed to constructor",
+            AddRComponentPropsConstructorParameter
+          )
+        }
+
         checkStatePropsInit(holder, reactComponentClass)
 
         val builderFunction = reactComponentClass.findBuilderFunction()
@@ -67,24 +75,27 @@ class RComponentInspection : AbstractKotlinInspection() {
 
     if (stateInitWithProps.isEmpty() && stateInitWithoutProps.isEmpty()) {
       // No state init functions. Let check there is no state
-      if (reactComponentClass.findStateInterface()?.analyze()?.isEmpty != true) {
-        reactComponentClass.psi?.nameIdentifier?.let {
-          holder.registerProblem(
-            it, "Component has state that should be initialized"
-            // todo(quick fix): Add all missed state initializers from properties
-          )
+      val rStateInterface = reactComponentClass.findStateInterface()
+      if (rStateInterface != null) {
+        if (!rStateInterface.analyze().isEmpty) {
+          reactComponentClass.psi?.nameIdentifier?.let {
+            holder.registerProblem(
+              it, "Component has state that should be initialized"
+              // todo(quick fix): Add all missed state initializers from properties
+            )
+          }
         }
       }
     }
 
     if (stateInitWithProps.isNotEmpty() && !reactComponentClass.isPropsPassedInConstructor()) {
       stateInitWithProps.forEach {
-        it.psi?.nameIdentifier?.let {
+        (it.propsParameter?.source?.getPsi() as? KtParameter)?.nameIdentifier?.let {
           holder.registerProblem(
             it,
-            "${reactComponentClass.propsTypeSimpleName} is not passed to component constructor"
+            "${reactComponentClass.propsTypeSimpleName} is not passed to component constructor",
+            AddRComponentPropsConstructorParameter
           )
-          // todo(quick fix): Add props to component constructor parameter
         }
       }
     }

@@ -18,6 +18,7 @@ class RPropsInterface(kotlinClass: ClassDescriptor) : RJsObjInterface(kotlinClas
   override val kind: Kind<*>
     get() = Companion
 
+
   override fun validateMember(declaration: DeclarationDescriptor, problemsHolder: ProblemsHolder?) =
     super.validateMember(declaration, problemsHolder).also {
       val psi = it?.psi
@@ -33,6 +34,10 @@ class RPropsInterface(kotlinClass: ClassDescriptor) : RJsObjInterface(kotlinClas
     }
 
   companion object : RJsObjInterface.Kind<RPropsInterface>(React.RProps, "RProps") {
+    override val orderInFile: Int = 1
+    override val suffix: String = "Props"
+    override val rComponentTypeArgument = React.RComponent.P
+
     override fun create(c: ClassDescriptor) = RPropsInterface(c)
 
     // https://reactjs.org/warnings/special-props.html

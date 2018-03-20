@@ -2,6 +2,7 @@ package io.github.snrostov.kotlin.react.ide.intentions
 
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
+import io.github.snrostov.kotlin.react.ide.codegen.removeProperty
 import io.github.snrostov.kotlin.react.ide.model.asReactProps
 import io.github.snrostov.kotlin.react.ide.model.isReactProps
 import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface

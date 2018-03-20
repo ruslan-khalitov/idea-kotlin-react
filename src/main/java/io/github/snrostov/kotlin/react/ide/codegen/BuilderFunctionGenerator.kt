@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.psi.psiUtil.quoteIfNeeded
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.types.KotlinType
 
-class RComponentBuilderFunctionGenerator(
+class BuilderFunctionGenerator(
   val psiFactory: KtPsiFactory,
   val component: RComponentClass,
   val generateBodyParameter: Boolean = true
@@ -47,7 +47,7 @@ class RComponentBuilderFunctionGenerator(
         bodyParameter()
       }
       appendln()
-      append(") = child(${component.kotlinClass.fqNameSafe.asString()}::class) {")
+      append(") = child(${component.cls.fqNameSafe.asString()}::class) {")
       appendln()
       props.forEach {
         assigment(it)

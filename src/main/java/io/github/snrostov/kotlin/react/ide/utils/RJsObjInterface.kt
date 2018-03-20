@@ -1,14 +1,14 @@
 package io.github.snrostov.kotlin.react.ide.utils
 
 import com.intellij.codeInspection.ProblemsHolder
-import io.github.snrostov.kotlin.react.ide.model.RComponentClass
-import io.github.snrostov.kotlin.react.ide.model.RPropsInterface
-import io.github.snrostov.kotlin.react.ide.model.RStateInterface
-import io.github.snrostov.kotlin.react.ide.model.asReactComponentClass
 import io.github.snrostov.kotlin.react.ide.insepctions.RComponentBuilderExpressionsInspection
 import io.github.snrostov.kotlin.react.ide.insepctions.RComponentInspection
 import io.github.snrostov.kotlin.react.ide.insepctions.RPropsInspection
 import io.github.snrostov.kotlin.react.ide.insepctions.RStateInspection
+import io.github.snrostov.kotlin.react.ide.model.RComponentClass
+import io.github.snrostov.kotlin.react.ide.model.RPropsInterface
+import io.github.snrostov.kotlin.react.ide.model.RStateInterface
+import io.github.snrostov.kotlin.react.ide.model.asReactComponent
 import io.github.snrostov.kotlin.react.ide.quickfixes.SafeDelete
 import io.github.snrostov.kotlin.react.ide.quickfixes.ToVar
 import org.jetbrains.kotlin.descriptors.*
@@ -55,9 +55,12 @@ abstract class RJsObjInterface(val kClass: ClassDescriptor) {
       if (!it.isNonCodeUsage()) {
         val superTypesList = it.element?.parents?.find { it is KtSuperTypeList } as KtSuperTypeList?
         if (superTypesList != null) {
-          val componentClass = superTypesList.containingClass()?.asReactComponentClass
-          if (componentClass?.propsType?.constructor?.declarationDescriptor == kClass) {
-            result.add(componentClass)
+          val componentClass = superTypesList.containingClass()?.asReactComponent
+          if (componentClass != null) {
+            val componentTypeArgument = kind.rComponentTypeArgument.getProjectionValue(componentClass.rComponentType)
+            if (componentTypeArgument?.constructor?.declarationDescriptor == kClass) {
+              result.add(componentClass)
+            }
           }
         }
       }
@@ -131,9 +134,15 @@ abstract class RJsObjInterface(val kClass: ClassDescriptor) {
 
   /** RProps or RState type reference and [RJsObjInterface] factory */
   abstract class Kind<out T : RJsObjInterface>(val interfaceType: ClassMatcher, val title: String) {
+    abstract val orderInFile: Int
+
+    abstract val suffix: String
+
+    abstract val rComponentTypeArgument: TypeParameterMatcher
+
     fun canWrap(c: ClassDescriptor) = c.getSuperInterfaces().find { interfaceType.matches(it) } != null
 
-    fun tryWrap(c: ClassDescriptor) = if (canWrap(c)) create(c) else null
+    fun tryWrap(c: ClassDescriptor?) = if (c != null && canWrap(c)) create(c) else null
 
     abstract fun create(c: ClassDescriptor): T
   }

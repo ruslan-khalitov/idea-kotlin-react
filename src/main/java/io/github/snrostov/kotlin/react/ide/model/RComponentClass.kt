@@ -2,6 +2,7 @@ package io.github.snrostov.kotlin.react.ide.model
 
 import com.intellij.psi.PsiElement
 import io.github.snrostov.kotlin.react.ide.React
+import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
 import io.github.snrostov.kotlin.react.ide.utils.toLowerCaseFirst
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.idea.refactoring.getContainingScope
@@ -9,6 +10,7 @@ import org.jetbrains.kotlin.idea.search.usagesSearch.descriptor
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtSuperTypeCallEntry
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
 import org.jetbrains.kotlin.resolve.source.getPsi
 import org.jetbrains.kotlin.types.KotlinType
@@ -25,19 +27,16 @@ val KotlinType.asReactComponent
 val KtClass.asReactComponent
   get() = (descriptor as? ClassDescriptor)?.asReactComponent
 
-val PsiElement.asReactComponentClass
-  get() = (this as? KtClass)?.asReactComponent
-
 /** Wrapper for user defined RComponent class */
-class RComponentClass(val kotlinClass: ClassDescriptor) {
+class RComponentClass(val cls: ClassDescriptor) {
   val psi
-    get() = kotlinClass.source.getPsi() as? KtClass
+    get() = cls.source.getPsi() as? KtClass
 
   val builderFunctionName
-    get() = kotlinClass.name.identifier.toLowerCaseFirst()
+    get() = cls.name.identifier.toLowerCaseFirst()
 
   fun findBuilderFunction() =
-    kotlinClass.getContainingScope()?.parent?.getContributedFunctions(
+    cls.getContainingScope()?.parent?.getContributedFunctions(
       Name.identifier(builderFunctionName),
       NoLookupLocation.FROM_IDE
     )?.find {
@@ -47,39 +46,58 @@ class RComponentClass(val kotlinClass: ClassDescriptor) {
     }
 
   fun findStateInitFunctions(): Collection<RComponentStateInitFunction> =
-    React.RComponent.stateInitFunction.findOverride(kotlinClass).map {
+    React.RComponent.stateInitFunction.findOverride(cls).map {
       RComponentStateInitFunction(this, it, null)
-    } + React.RComponent.stateInitFromPropsFunction.findOverride(kotlinClass).map {
+    } + React.RComponent.stateInitFromPropsFunction.findOverride(cls).map {
       RComponentStateInitFunction(this, it, it.valueParameters[0])
     }
 
   // todo: support inherited components
   val rComponentType
-    get() = kotlinClass.defaultType.constructor.supertypes.find {
+    get() = cls.defaultType.constructor.supertypes.find {
       React.RComponent.matches(it.constructor)
     }
 
+  fun <T : RJsObjInterface> getPropsOrStateType(kind: RJsObjInterface.Kind<T>) =
+    kind.rComponentTypeArgument.getProjectionValue(rComponentType)
+
+  fun <T : RJsObjInterface> getPropsOrStateInterface(kind: RJsObjInterface.Kind<T>) =
+    kind.tryWrap((getPropsOrStateType(kind)?.constructor?.declarationDescriptor as? ClassDescriptor))
+
   val propsType
-    get() = React.RComponent.P.getProjectionValue(rComponentType)
+    get() = getPropsOrStateType(RPropsInterface)
 
   val propsTypeSimpleName: String?
     get() = simpleTypeName(propsType) ?: "RProps"
 
+  val hasProps: Boolean
+    get() = !React.RProps.matches(propsType)
+
   fun findPropsInterface(): RPropsInterface? =
-    (propsType?.constructor?.declarationDescriptor as? ClassDescriptor)?.asReactProps
+    getPropsOrStateInterface(RPropsInterface)
 
   val stateType
-    get() = React.RComponent.S.getProjectionValue(rComponentType)
+    get() = getPropsOrStateType(RStateInterface)
 
   val stateTypeSimpleName: String?
     get() = simpleTypeName(stateType) ?: "RState"
 
   fun findStateInterface(): RStateInterface? =
-    (stateType?.constructor?.declarationDescriptor as? ClassDescriptor)?.asReactState
+    getPropsOrStateInterface(RStateInterface)
 
   fun findChildrenPropUsages(): List<PsiElement> = listOf() // todo: findChildrenPropUsages
 
-  fun isPropsPassedInConstructor(): Boolean = false // todo: isPropsPassedInConstructor
+  fun isPropsPassedInConstructor(): Boolean {
+    psi?.superTypeListEntries?.forEach {
+      if (React.RComponent.matches(it.typeReference) && it is KtSuperTypeCallEntry) {
+        if (it.valueArguments.getOrNull(0) != null) {
+          return true
+        }
+      }
+    }
+
+    return false
+  }
 
   fun simpleTypeName(type: KotlinType?): String? {
     val name = type?.constructor?.declarationDescriptor?.name ?: return null

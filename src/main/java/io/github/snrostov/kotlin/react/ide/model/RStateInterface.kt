@@ -14,7 +14,12 @@ class RStateInterface(kotlinClass: ClassDescriptor) : RJsObjInterface(kotlinClas
   override val kind: Kind<*>
     get() = Companion
 
+
   companion object : RJsObjInterface.Kind<RStateInterface>(React.RState, "RState") {
+    override val orderInFile: Int = 2
+    override val suffix: String = "State"
+    override val rComponentTypeArgument = React.RComponent.S
+
     override fun create(c: ClassDescriptor) = RStateInterface(c)
   }
 }

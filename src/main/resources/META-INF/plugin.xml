@@ -53,6 +53,14 @@ Generates React Component builder function.
         <intentionAction>
             <className>io.github.snrostov.kotlin.react.ide.intentions.DeletePropertyIntention</className>
         </intentionAction>
+
+        <intentionAction>
+            <className>io.github.snrostov.kotlin.react.ide.intentions.CreateRProps</className>
+        </intentionAction>
+
+        <intentionAction>
+            <className>io.github.snrostov.kotlin.react.ide.intentions.CreateRState</className>
+        </intentionAction>
     </extensions>
 
     <actions>

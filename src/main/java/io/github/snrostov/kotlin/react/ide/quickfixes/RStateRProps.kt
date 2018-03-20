@@ -7,15 +7,16 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.project.Project
 import com.intellij.refactoring.safeDelete.SafeDeleteHandler
-import io.github.snrostov.kotlin.react.ide.codegen.RComponentBuilderFunctionGenerator
-import io.github.snrostov.kotlin.react.ide.model.RComponentBuilderFunction
-import io.github.snrostov.kotlin.react.ide.model.RComponentClass
+import io.github.snrostov.kotlin.react.ide.codegen.removePropsConstructorArgumentAndSuperTypeCall
+import io.github.snrostov.kotlin.react.ide.codegen.setTypeArgument
+import io.github.snrostov.kotlin.react.ide.model.RPropsInterface
 import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
-import org.jetbrains.kotlin.idea.codeInsight.shorten.addToShorteningWaitSet
+import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.idea.codeInsight.shorten.performDelayedRefactoringRequests
-import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.idea.search.usagesSearch.descriptor
+import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtPsiFactory
-
+import org.jetbrains.kotlin.resolve.source.getPsi
 
 object ToVar : LocalQuickFix {
   override fun getName(): String = "Replace with var"
@@ -46,40 +47,32 @@ class SafeDelete(val kind: String) : LocalQuickFix {
   }
 }
 
-/**
- * All usages in RComponent declaration will be replaced with RProps/RState.
- * All other usages will be reported.
- */
-class SafeDeleteRJsObjInterface(val kind: RJsObjInterface.Kind<*>) {
+class DeleteRJsObjInterface(val kind: RJsObjInterface.Kind<*>) : LocalQuickFix {
+  override fun getName() = "Delete empty ${kind.title} interface"
 
-}
-
-class CreateRJsObjInterface(val kind: RJsObjInterface.Kind<*>) {
-
-}
-
-class ActualizeRComponentBuilderFunction(val function: RComponentBuilderFunction) : LocalQuickFix {
-  override fun getName(): String = "Actualize React Component builder function"
-
-  override fun getFamilyName(): String = name
+  override fun getFamilyName() = name
 
   override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+    val ktClass = (descriptor.psiElement as? KtClass)?.descriptor as? ClassDescriptor ?: return
+    val rprops = kind.tryWrap(ktClass) ?: return
+
     if (!FileModificationService.getInstance().preparePsiElementForWrite(descriptor.psiElement)) return
-    function.actualize()
-    performDelayedRefactoringRequests(project)
-  }
-}
 
-class GenerateRComponentBuilderFunction(val componentClass: RComponentClass) : LocalQuickFix {
-  override fun getName(): String = "Generate Component builder function"
+    rprops.findComponents().forEach {
+      // remove RProps from constructor, super type constructor call, and state init
+      if (kind == RPropsInterface) {
+        it.removePropsConstructorArgumentAndSuperTypeCall()
+        it.findStateInitFunctions().forEach {
+          it.propsParameter?.source?.getPsi()?.delete()
+        }
+        // todo: delete in builder function
+      } else {
+        it.setTypeArgument(kind, kind.interfaceType.fqName.toString())
+      }
+    }
 
-  override fun getFamilyName(): String = name
+    rprops.psi?.delete()
 
-  override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-    if (!FileModificationService.getInstance().preparePsiElementForWrite(descriptor.psiElement)) return
-    val psi = componentClass.psi ?: return
-    val function = RComponentBuilderFunctionGenerator(KtPsiFactory(project), componentClass).generate()
-    (psi.parent.addAfter(function, psi) as? KtNamedFunction)?.addToShorteningWaitSet()
     performDelayedRefactoringRequests(project)
   }
 }

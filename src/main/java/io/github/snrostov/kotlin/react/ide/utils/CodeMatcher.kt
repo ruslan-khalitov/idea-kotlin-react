@@ -2,9 +2,14 @@ package io.github.snrostov.kotlin.react.ide.utils
 
 import io.github.snrostov.kotlin.react.ide.React
 import org.jetbrains.kotlin.descriptors.*
+import org.jetbrains.kotlin.idea.references.mainReference
+import org.jetbrains.kotlin.idea.search.usagesSearch.descriptor
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.psi.KtDeclaration
+import org.jetbrains.kotlin.psi.KtTypeReference
+import org.jetbrains.kotlin.psi.KtUserType
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
 import org.jetbrains.kotlin.resolve.descriptorUtil.firstOverridden
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameOrNull
@@ -22,6 +27,15 @@ import org.jetbrains.kotlin.types.getAbbreviation
 open class ClassMatcher(parent: FqName, name: String) : SymbolMatcher(parent, name) {
   infix fun matches(type: KotlinType?) =
     matches(type?.constructor)
+
+  infix fun matches(typeRef: KtTypeReference?) =
+    matches(typeRef?.typeElement as? KtUserType)
+
+  infix fun matches(type: KtUserType?): Boolean {
+    val typeConstructorRef = type?.referenceExpression?.mainReference
+    val resolvedTypeConstructorRef = typeConstructorRef?.resolve() as? KtDeclaration
+    return matches((resolvedTypeConstructorRef?.descriptor as? ClassConstructorDescriptor)?.constructedClass)
+  }
 
   infix fun matches(typeConstructor: TypeConstructor?) =
     matches(typeConstructor?.declarationDescriptor)

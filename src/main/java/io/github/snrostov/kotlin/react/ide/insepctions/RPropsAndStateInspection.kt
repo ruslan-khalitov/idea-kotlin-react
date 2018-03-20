@@ -2,9 +2,9 @@ package io.github.snrostov.kotlin.react.ide.insepctions
 
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
-import io.github.snrostov.kotlin.react.ide.quickfixes.SafeDelete
 import io.github.snrostov.kotlin.react.ide.model.RPropsInterface
 import io.github.snrostov.kotlin.react.ide.model.RStateInterface
+import io.github.snrostov.kotlin.react.ide.quickfixes.DeleteRJsObjInterface
 import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
 import org.jetbrains.kotlin.idea.caches.resolve.resolveToDescriptorIfAny
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
@@ -26,9 +26,9 @@ abstract class RJsObjInterfaceInspection(val kind: RJsObjInterface.Kind<*>) : Ab
       if (rObjInterface.isEmpty) {
         holder.registerProblem(
           rpropsPsi,
-          "${kind.title} interface is empty",
+          "There are no props in ${kind.title}",
           ProblemHighlightType.LIKE_UNUSED_SYMBOL,
-          SafeDelete("empty ${kind.title} interface")
+          DeleteRJsObjInterface(kind)
         )
       }
     }
