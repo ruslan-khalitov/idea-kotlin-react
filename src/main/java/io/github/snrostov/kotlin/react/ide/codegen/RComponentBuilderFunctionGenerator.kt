@@ -2,6 +2,7 @@ package io.github.snrostov.kotlin.react.ide.codegen
 
 import io.github.snrostov.kotlin.react.ide.model.RComponentClass
 import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
+import org.jetbrains.kotlin.idea.util.IdeDescriptorRenderers
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.psi.psiUtil.quoteIfNeeded
@@ -32,7 +33,7 @@ class RComponentBuilderFunctionGenerator(
     val text = buildString {
       appendln()
       appendln()
-      append("fun RBuilder.${component.builderFunctionName.quoteIfNeeded()}(")
+      append("fun react.RBuilder.${component.builderFunctionName.quoteIfNeeded()}(")
       appendln()
       var hasParameters = false
       props.forEach {
@@ -61,8 +62,14 @@ class RComponentBuilderFunctionGenerator(
     return psiFactory.createFunction(text)
   }
 
-  fun StringBuilder.bodyCall() {
-    appendln("$bodyParameterName()")
+  fun StringBuilder.parameter(it: RJsObjInterface.Property) {
+    append(it.name?.quoteIfNeeded())
+    append(": ")
+    append(renderType(it.declaration.type))
+  }
+
+  fun StringBuilder.bodyParameter() {
+    append("$bodyParameterName: react.RHandler<${renderType(component.propsType)}> = {}")
   }
 
   fun StringBuilder.assigment(it: RJsObjInterface.Property) {
@@ -72,17 +79,11 @@ class RComponentBuilderFunctionGenerator(
     append(it.name?.quoteIfNeeded())
   }
 
-  fun StringBuilder.parameter(it: RJsObjInterface.Property) {
-    append(it.name?.quoteIfNeeded())
-    append(": ")
-    append(createType(it.declaration.type))
+  fun StringBuilder.bodyCall() {
+    appendln("$bodyParameterName()")
   }
 
-  fun StringBuilder.bodyParameter() {
-    append("$bodyParameterName: RHandler<${createType(component.propsType)}> = {}")
-  }
-
-  fun createType(type: KotlinType?): String =
+  fun renderType(type: KotlinType?): String =
     if (type == null) "?"
-    else type.toString() // todo: prop way to render type to string with fqn
+    else IdeDescriptorRenderers.SOURCE_CODE.renderType(type)
 }

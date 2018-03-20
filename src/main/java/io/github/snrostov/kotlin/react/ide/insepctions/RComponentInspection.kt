@@ -65,6 +65,18 @@ class RComponentInspection : AbstractKotlinInspection() {
       }
     }
 
+    if (stateInitWithProps.isEmpty() && stateInitWithoutProps.isEmpty()) {
+      // No state init functions. Let check there is no state
+      if (reactComponentClass.findStateInterface()?.analyze()?.isEmpty != true) {
+        reactComponentClass.psi?.nameIdentifier?.let {
+          holder.registerProblem(
+            it, "Component has state that should be initialized"
+            // todo(quick fix): Add all missed state initializers from properties
+          )
+        }
+      }
+    }
+
     if (stateInitWithProps.isNotEmpty() && !reactComponentClass.isPropsPassedInConstructor()) {
       stateInitWithProps.forEach {
         it.psi?.nameIdentifier?.let {

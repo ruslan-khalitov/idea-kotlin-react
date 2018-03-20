@@ -2,10 +2,11 @@ package io.github.snrostov.kotlin.react.ide.model
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
-import io.github.snrostov.kotlin.react.ide.codegen.RComponentBuilderFunctionGenerator
 import io.github.snrostov.kotlin.react.ide.analyzer.PropValue
+import io.github.snrostov.kotlin.react.ide.codegen.RComponentBuilderFunctionGenerator
 import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
+import org.jetbrains.kotlin.idea.codeInsight.shorten.addToShorteningWaitSet
 import org.jetbrains.kotlin.idea.references.mainReference
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.parents
@@ -43,6 +44,16 @@ class RComponentBuilderFunction(
     val lambdaBody = expression.lamdaExpression?.bodyExpression ?: return false
     var prevAssignmentExpr: PsiElement? = null
 
+    // actualize parameter types
+    with(codegen) {
+      propAssignments.findPropsWithOutdatedParameterTypes().forEach { (prop, assignment) ->
+        if (assignment.value is PropValue.Parameter) {
+          val typeReference = psiFactory.createType(codegen.renderType(prop.declaration.type))
+          assignment.value.parameter.setTypeReference(typeReference)?.addToShorteningWaitSet()
+        }
+      }
+    }
+
     // add new properties
     with(codegen) {
       props.forEach { prop ->
@@ -55,6 +66,7 @@ class RComponentBuilderFunction(
             instertedParameter.nextSibling
           )
           else valueParameterList.addBefore(psiFactory.createNewLine(), instertedParameter)
+          instertedParameter.addToShorteningWaitSet()
           prevParameter = instertedParameter
 
           val assignmentExpr = psiFactory.createExpression(buildString { assigment(prop) })

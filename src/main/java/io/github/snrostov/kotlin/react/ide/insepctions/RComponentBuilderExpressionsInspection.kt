@@ -2,9 +2,9 @@ package io.github.snrostov.kotlin.react.ide.insepctions
 
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
+import io.github.snrostov.kotlin.react.ide.React
 import io.github.snrostov.kotlin.react.ide.model.RComponentBuilderExpression
 import io.github.snrostov.kotlin.react.ide.model.RPropsInterface
-import io.github.snrostov.kotlin.react.ide.React
 import io.github.snrostov.kotlin.react.ide.model.asReactComponent
 import io.github.snrostov.kotlin.react.ide.quickfixes.ActualizeRComponentBuilderFunction
 import io.github.snrostov.kotlin.react.ide.utils.reportOnce
@@ -51,6 +51,8 @@ class RComponentBuilderExpressionsInspection : AbstractKotlinInspection() {
     val missedPropAssignments = builderExpression.collectMissedPropAssignments()
 
     val builderFunction = builderExpression.findContainingBuilderFunction()
+    val propsWithOutdatedParameterTypes =
+      missedPropAssignments.assignments?.findPropsWithOutdatedParameterTypes()?.keys ?: setOf()
 
     if (builderFunction != null) {
       val builderFunctionName = builderFunction.name
@@ -66,6 +68,7 @@ class RComponentBuilderExpressionsInspection : AbstractKotlinInspection() {
     }
 
     val hasUnknownPropsAssignments = missedPropAssignments.assignments?.unknownPropsAssignments?.isNotEmpty() ?: false
+    val hasOutdatedTypes = propsWithOutdatedParameterTypes.isNotEmpty()
     var hasUninitializedProperties = false
     var isUninitialisedChildrenUsed = false
 
@@ -105,10 +108,32 @@ class RComponentBuilderExpressionsInspection : AbstractKotlinInspection() {
       isUninitialisedChildrenUsed = true
     }
 
-    if (hasUninitializedProperties || isUninitialisedChildrenUsed || hasUnknownPropsAssignments) {
-      val message = if (isUninitialisedChildrenUsed) "Children is used in component, but not initialized"
-      else if (isUninitialisedChildrenUsed) "All ${componentClass.propsTypeSimpleName} vars should be initialized"
-      else "Builder function contains outdated assignments" // hasUnknownPropsAssignments
+    propsWithOutdatedParameterTypes.forEach {
+      if (it.name !in RPropsInterface.reservedPropNames) {
+        // Suggestion to update builder function at RProp property declaration
+        if (builderFunction != null && builderFunction.psi?.containingKtFile == it.psi?.containingKtFile) {
+          it.psi?.reportOnce { psi ->
+            // report at whole element, not name (otherwise it is not noticeable)
+            holder.registerProblem(
+              psi, "Builder function has outdated parameter type",
+              ProblemHighlightType.WEAK_WARNING,
+              ActualizeRComponentBuilderFunction(builderFunction)
+            )
+          }
+        }
+
+        hasUninitializedProperties = true
+      }
+    }
+
+    if (hasUninitializedProperties || isUninitialisedChildrenUsed || hasUnknownPropsAssignments || hasOutdatedTypes) {
+      val message = when {
+        isUninitialisedChildrenUsed -> "Children is used in component, but not initialized"
+        hasUninitializedProperties -> "All ${componentClass.propsTypeSimpleName} vars should be initialized"
+        hasOutdatedTypes -> "Builder function contains outdated parameter types"
+        hasUnknownPropsAssignments -> "Builder function contains outdated assignments"
+        else -> "Outdated builder function"
+      }
 
       if (builderFunction != null) {
         // Report at builder function name

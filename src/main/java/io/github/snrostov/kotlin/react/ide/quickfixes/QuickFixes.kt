@@ -7,10 +7,13 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.project.Project
 import com.intellij.refactoring.safeDelete.SafeDeleteHandler
+import io.github.snrostov.kotlin.react.ide.codegen.RComponentBuilderFunctionGenerator
 import io.github.snrostov.kotlin.react.ide.model.RComponentBuilderFunction
 import io.github.snrostov.kotlin.react.ide.model.RComponentClass
-import io.github.snrostov.kotlin.react.ide.codegen.RComponentBuilderFunctionGenerator
 import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
+import org.jetbrains.kotlin.idea.codeInsight.shorten.addToShorteningWaitSet
+import org.jetbrains.kotlin.idea.codeInsight.shorten.performDelayedRefactoringRequests
+import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtPsiFactory
 
 
@@ -63,6 +66,7 @@ class ActualizeRComponentBuilderFunction(val function: RComponentBuilderFunction
   override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
     if (!FileModificationService.getInstance().preparePsiElementForWrite(descriptor.psiElement)) return
     function.actualize()
+    performDelayedRefactoringRequests(project)
   }
 }
 
@@ -75,6 +79,7 @@ class GenerateRComponentBuilderFunction(val componentClass: RComponentClass) : L
     if (!FileModificationService.getInstance().preparePsiElementForWrite(descriptor.psiElement)) return
     val psi = componentClass.psi ?: return
     val function = RComponentBuilderFunctionGenerator(KtPsiFactory(project), componentClass).generate()
-    psi.parent.addAfter(function, psi)
+    (psi.parent.addAfter(function, psi) as? KtNamedFunction)?.addToShorteningWaitSet()
+    performDelayedRefactoringRequests(project)
   }
 }

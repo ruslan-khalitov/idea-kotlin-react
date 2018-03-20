@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.cfg.pseudocode.instructions.Instruction
 import org.jetbrains.kotlin.cfg.pseudocode.instructions.eval.WriteValueInstruction
 import org.jetbrains.kotlin.cfg.pseudocode.instructions.special.SubroutineExitInstruction
 import org.jetbrains.kotlin.idea.references.mainReference
+import org.jetbrains.kotlin.idea.search.usagesSearch.descriptor
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtParameter
 import org.jetbrains.kotlin.psi.KtReferenceExpression
@@ -66,6 +67,16 @@ data class PropAssignments(
   val unknownPropsAssignments: List<PropAssignment>,
   private val symbol: Any? = null
 ) {
+  fun findPropsWithOutdatedParameterTypes() =
+    byProperty.filter { (prop, assignment) ->
+      if (assignment.value is PropValue.Parameter) {
+        val descriptor = assignment.value.parameter.descriptor
+        if (descriptor != null) {
+          descriptor.type != prop.declaration.type
+        } else false
+      } else false
+    }
+
   companion object {
     val EMPTY = PropAssignments(mapOf(), listOf())
 

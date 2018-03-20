@@ -77,9 +77,9 @@ class RComponentClass(val kotlinClass: ClassDescriptor) {
   fun findStateInterface(): RStateInterface? =
     (stateType?.constructor?.declarationDescriptor as? ClassDescriptor)?.asReactState
 
-  fun findChildrenPropUsages(): List<PsiElement> = listOf()
+  fun findChildrenPropUsages(): List<PsiElement> = listOf() // todo: findChildrenPropUsages
 
-  fun isPropsPassedInConstructor(): Boolean = false // todo:
+  fun isPropsPassedInConstructor(): Boolean = false // todo: isPropsPassedInConstructor
 
   fun simpleTypeName(type: KotlinType?): String? {
     val name = type?.constructor?.declarationDescriptor?.name ?: return null
