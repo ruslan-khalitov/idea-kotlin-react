@@ -32,7 +32,7 @@ import org.jetbrains.kotlin.psi.referenceExpressionRecursiveVisitor
 fun RComponentBuilderFunction.actualize(): Boolean {
   val psi = psi ?: return false
   val psiFactory = KtPsiFactory(psi)
-  val codegen = BuilderFunctionGenerator(psiFactory, componentClass)
+  val codegen = BuilderFunctionGenerator(componentClass)
   val props = componentClass.findPropsInterface()?.analyze()?.properties ?: return false
   val expression = expression ?: return false
   val propAssignments = expression.getPropAssignments() ?: return false

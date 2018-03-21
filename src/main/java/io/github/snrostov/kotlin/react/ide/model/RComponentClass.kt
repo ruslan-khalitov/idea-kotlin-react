@@ -69,6 +69,9 @@ class RComponentClass(val cls: ClassDescriptor) {
       RComponentStateInitFunction(this, it, it.valueParameters[0])
     }
 
+  fun findRenderFunction() =
+    React.RComponent.renderFunction.findOverride(cls)
+
   // todo: support inherited components
   val rComponentType
     get() = cls.defaultType.constructor.supertypes.find {

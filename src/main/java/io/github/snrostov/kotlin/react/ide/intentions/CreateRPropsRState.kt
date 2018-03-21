@@ -19,9 +19,11 @@ package io.github.snrostov.kotlin.react.ide.intentions
 
 import com.intellij.codeInsight.FileModificationService
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import io.github.snrostov.kotlin.react.ide.codegen.setPropsConstructorArgument
 import io.github.snrostov.kotlin.react.ide.codegen.setTypeArgument
+import io.github.snrostov.kotlin.react.ide.model.RComponentClass
 import io.github.snrostov.kotlin.react.ide.model.RPropsInterface
 import io.github.snrostov.kotlin.react.ide.model.RStateInterface
 import io.github.snrostov.kotlin.react.ide.model.asReactComponent
@@ -54,6 +56,18 @@ abstract class CreateRJsObjInterface(val kind: RJsObjInterface.Kind<*>) : SelfTa
     val project = element.project
     val ktClass = element.descriptor as? ClassDescriptor ?: return
     val reactComponent = ktClass.asReactComponent ?: return
+    val insertedInterface = create(reactComponent, project) ?: return
+
+    performDelayedRefactoringRequests(project)
+
+    // set cursor at created interface
+    val body = insertedInterface.getBody()?.lBrace?.nextSibling
+    if (body != null && editor != null) {
+      editor.moveCaret(body.startOffset)
+    }
+  }
+
+  fun create(reactComponent: RComponentClass, project: Project): KtClass? {
     val componentName = reactComponent.cls.name.identifier
     val interfaceName = "$componentName${kind.suffix}"
 
@@ -66,8 +80,8 @@ abstract class CreateRJsObjInterface(val kind: RJsObjInterface.Kind<*>) : SelfTa
       RStateInterface -> reactComponent.psi
       else -> null
     }
-    val parent = anchor?.parent ?: return
-    if (!FileModificationService.getInstance().preparePsiElementForWrite(parent)) return
+    val parent = anchor?.parent ?: return null
+    if (!FileModificationService.getInstance().preparePsiElementForWrite(parent)) return null
 
     val psiFactory = KtPsiFactory(project)
     val declaration = buildString {
@@ -85,14 +99,7 @@ abstract class CreateRJsObjInterface(val kind: RJsObjInterface.Kind<*>) : SelfTa
       reactComponent.setPropsConstructorArgument(interfaceName)
     }
 
-    // set cursor at created interface
-    val body = insertedInterface.getBody()?.lBrace?.nextSibling
-    if (body != null && editor != null) {
-      editor.moveCaret(body.startOffset)
-    }
-
     // todo:  actualize bulider function body parameter `body: RHandler<RProps> = {}`
-
-    performDelayedRefactoringRequests(project)
+    return insertedInterface
   }
 }

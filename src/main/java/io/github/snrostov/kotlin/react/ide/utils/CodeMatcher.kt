@@ -67,6 +67,8 @@ open class ClassMatcher(parent: FqName, name: String) : SymbolMatcher(parent, na
 
   protected fun property(name: String) =
     ClassPropertyMatcher(this, name)
+
+  fun simpleTypeMatcher() = ExactTypeMatcher(fqName)
 }
 
 open class MemberFunctionMatcher(val dispatchReceiver: ClassMatcher, val name: String) :
@@ -110,7 +112,8 @@ open class MemberFunctionMatcher(val dispatchReceiver: ClassMatcher, val name: S
     container.unsubstitutedMemberScope
       .getContributedFunctions(Name.identifier(name), NoLookupLocation.FROM_IDE)
       .filter {
-        it.kind != CallableMemberDescriptor.Kind.FAKE_OVERRIDE && it.firstOverridden { matches(it) } != null
+        it.kind != CallableMemberDescriptor.Kind.FAKE_OVERRIDE &&
+            it.firstOverridden { matches(it) } != null
       }
 
   ////////// builder function (should be used in subclasses)

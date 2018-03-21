@@ -61,6 +61,12 @@ Generates React Component builder function.
         <intentionAction>
             <className>io.github.snrostov.kotlin.react.ide.intentions.CreateRState</className>
         </intentionAction>
+
+        <completion.contributor
+                language="kotlin"
+                id="RComponentCompletionContributor"
+                order="first"
+                implementationClass="io.github.snrostov.kotlin.react.ide.completion.RComponentCompletionContributor" />
     </extensions>
 
     <actions>

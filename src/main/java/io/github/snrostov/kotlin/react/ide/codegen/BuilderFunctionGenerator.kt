@@ -19,6 +19,7 @@ package io.github.snrostov.kotlin.react.ide.codegen
 
 import io.github.snrostov.kotlin.react.ide.model.RComponentClass
 import io.github.snrostov.kotlin.react.ide.utils.RJsObjInterface
+import org.jetbrains.kotlin.idea.codeInsight.shorten.addToShorteningWaitSet
 import org.jetbrains.kotlin.idea.util.IdeDescriptorRenderers
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtPsiFactory
@@ -26,11 +27,17 @@ import org.jetbrains.kotlin.psi.psiUtil.quoteIfNeeded
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.types.KotlinType
 
+fun RComponentClass.generateBuilderFunction(): KtNamedFunction? {
+  val psi = psi ?: return null
+  val function = BuilderFunctionGenerator(this).generate()
+  return psi.parent.addAfter(function, psi) as? KtNamedFunction
+}
+
 class BuilderFunctionGenerator(
-  val psiFactory: KtPsiFactory,
   val component: RComponentClass,
   val generateBodyParameter: Boolean = true
 ) {
+  val psiFactory: KtPsiFactory = KtPsiFactory(component.psi!!)
   val propsInterface = component.findPropsInterface()
   val props = propsInterface?.analyze()?.properties ?: listOf()
   val propsByName = props.associateBy { it.name }
@@ -76,7 +83,9 @@ class BuilderFunctionGenerator(
       appendln("}")
     }
 
-    return psiFactory.createFunction(text)
+    val function = psiFactory.createFunction(text)
+    function.addToShorteningWaitSet()
+    return function
   }
 
   fun StringBuilder.parameter(it: RJsObjInterface.Property) {

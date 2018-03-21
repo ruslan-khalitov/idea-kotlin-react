@@ -55,9 +55,12 @@ object React {
       )
 
       /** `handler: react.RHandler<P> /* = react.RElementBuilder<P>.() -> kotlin.Unit */` */
-      val handler = parameter(ExactTypeMatcher(
-        RHandler,
-        P, abbreviation = true))
+      val handler = parameter(
+        ExactTypeMatcher(
+          RHandler,
+          P, abbreviation = true
+        )
+      )
     }
   }
 
@@ -80,6 +83,10 @@ object React {
     object stateInitFromPropsFunction : MemberFunctionMatcher(this, "init") {
       override val extensionReceiverType = S
       val props = parameter(P)
+    }
+
+    object renderFunction : MemberFunctionMatcher(this, "render") {
+      override val extensionReceiverType = RBuilder.simpleTypeMatcher()
     }
   }
 }

@@ -20,7 +20,7 @@ package io.github.snrostov.kotlin.react.ide
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import io.github.snrostov.kotlin.react.ide.KotlinReactIdeTestCaseProjectDescriptor
 
-open class KotlinReactIdeTestCase : LightCodeInsightFixtureTestCase() {
+abstract class KotlinReactIdeTestCase : LightCodeInsightFixtureTestCase() {
   override fun getTestDataPath() =
     "src/test/testData/insepctions"
 

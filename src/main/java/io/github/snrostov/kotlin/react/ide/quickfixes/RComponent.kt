@@ -21,8 +21,8 @@ import com.intellij.codeInsight.FileModificationService
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.project.Project
-import io.github.snrostov.kotlin.react.ide.codegen.BuilderFunctionGenerator
 import io.github.snrostov.kotlin.react.ide.codegen.actualize
+import io.github.snrostov.kotlin.react.ide.codegen.generateBuilderFunction
 import io.github.snrostov.kotlin.react.ide.codegen.setPropsConstructorArgument
 import io.github.snrostov.kotlin.react.ide.model.RComponentBuilderFunction
 import io.github.snrostov.kotlin.react.ide.model.RComponentClass
@@ -31,8 +31,6 @@ import org.jetbrains.kotlin.idea.codeInsight.shorten.addToShorteningWaitSet
 import org.jetbrains.kotlin.idea.codeInsight.shorten.performDelayedRefactoringRequests
 import org.jetbrains.kotlin.idea.util.IdeDescriptorRenderers
 import org.jetbrains.kotlin.psi.KtClass
-import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 class GenerateRComponentBuilderFunction(val componentClass: RComponentClass) : LocalQuickFix {
@@ -42,9 +40,7 @@ class GenerateRComponentBuilderFunction(val componentClass: RComponentClass) : L
 
   override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
     if (!FileModificationService.getInstance().preparePsiElementForWrite(descriptor.psiElement)) return
-    val psi = componentClass.psi ?: return
-    val function = BuilderFunctionGenerator(KtPsiFactory(project), componentClass).generate()
-    (psi.parent.addAfter(function, psi) as? KtNamedFunction)?.addToShorteningWaitSet()
+    componentClass.generateBuilderFunction()?.addToShorteningWaitSet()
     performDelayedRefactoringRequests(project)
   }
 }
