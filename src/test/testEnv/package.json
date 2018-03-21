@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@jetbrains/kotlin-extensions": "^1.0.0-pre.20",
+    "@jetbrains/kotlin-react": "^16.2.0-pre.20",
+    "@jetbrains/kotlin-react-dom": "^16.2.0-pre.20"
+  }
+}

@@ -1,4 +1,4 @@
 *.idea/**
-lib/**
-build/**
+**/build/**
 .gradle/**
+**/node_modules/**
