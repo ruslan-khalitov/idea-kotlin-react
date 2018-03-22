@@ -13,16 +13,16 @@ See [CONTRIBUTING.md] for more details.
 
 ## Features
 
-Generating React Components boilerplate (generating `RProps interface`, builder function and render function):
+_Click at ![Arrow](https://user-images.githubusercontent.com/2010355/37763367-e4e0068e-2dcf-11e8-8879-c215c6403662.png) to see the GIF._ 
+
+<details><summary>Generating React Components boilerplate (generating `RProps interface`, builder function and render function):</summary>
+<p>
 
 ![creating component](https://user-images.githubusercontent.com/2010355/37760359-7c69eb04-2dc7-11e8-942b-805757919720.gif)
 
-<details>
-<summary>
+</p>
 
-Updating DSL builder function on editing `RProps` declarations:
-
-</summary>
+<details><summary>Updating DSL builder function on editing `RProps` declarations:</summary>
 <p>
 
 ![02-editing-rprops](https://user-images.githubusercontent.com/2010355/37762027-5372d2ec-2dcc-11e8-94a8-ecdf84d7bb7a.gif)
@@ -30,21 +30,37 @@ Updating DSL builder function on editing `RProps` declarations:
 </p>
 </details>
 
-Even with arbitrary builder function code:
+<details><summary>Even with arbitrary builder function code:</summary>
+<p>
 
 ![03-builder-fun-cfg](https://user-images.githubusercontent.com/2010355/37762433-5286f66e-2dcd-11e8-94f8-1bbc3eb500b7.gif)
 
-All `RBuilder.child(C::class) { ... }` calls are analyzed for missed `RProps` assignments:
+</p>
+</details>
+
+<details><summary>All `RBuilder.child(C::class) { ... }` calls are analyzed for missed `RProps` assignments:</summary>
+<p>
 
 ![2018-03-22 12 35 10](https://user-images.githubusercontent.com/2010355/37762505-85d02d06-2dcd-11e8-85b9-eaa297abf83b.png)
 
-Creating and inspecting `RState` initialization:
+</p>
+</details>
+
+<details><summary>Creating and inspecting `RState` initialization:</summary>
+<p>
 
 ![04-creating-rstate](https://user-images.githubusercontent.com/2010355/37762608-db0a2308-2dcd-11e8-9f46-7b79ebc1f877.gif)
 
-Removing/creating `RProps`/`RState`:
+</p>
+</details>
+
+<details><summary>Removing/creating `RProps`/`RState`:</summary>
+<p>
 
 ![05-remove-create-rprops-rstate](https://user-images.githubusercontent.com/2010355/37762669-1462779a-2dce-11e8-8f4d-66134d57b1ce.gif)
+
+</p>
+</details>
 
 ### Insepctions
 
