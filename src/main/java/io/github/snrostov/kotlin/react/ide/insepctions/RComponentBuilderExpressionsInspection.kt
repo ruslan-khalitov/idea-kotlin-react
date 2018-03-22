@@ -176,7 +176,7 @@ class RComponentBuilderExpressionsInspection : AbstractKotlinInspection() {
           // Suggestion to update builder function at RProps interface declaration
           componentClass.findPropsInterface()?.psi?.nameIdentifier?.let {
             holder.registerProblem(
-              it, "Component builder function contains outdated assignments",
+              it, "Builder function contains outdated assignments",
               ProblemHighlightType.WEAK_WARNING,
               ActualizeRComponentBuilderFunction(builderFunction)
             )
