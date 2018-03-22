@@ -21,6 +21,7 @@ _Click at ![Arrow](https://user-images.githubusercontent.com/2010355/37763367-e4
 ![creating component](https://user-images.githubusercontent.com/2010355/37760359-7c69eb04-2dc7-11e8-942b-805757919720.gif)
 
 </p>
+</details>
 
 <details><summary>Updating DSL builder function on editing `RProps` declarations:</summary>
 <p>
