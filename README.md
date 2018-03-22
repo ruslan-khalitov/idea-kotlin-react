@@ -80,7 +80,7 @@ Even arbitrary builder function code supported.
  - [x] on `children()` call: Children is not initialized in component builder function
 
 `RProps`/`RState` interface declaration:
- - [ ] Only var properties are allowed in RProps/RState interfaces
+ - [x] Only var properties are allowed in RProps/RState interfaces
  - [x] There are no props in RProps/RState interface
  - [x] Value is not initialized in component builder function
  - [x] Builder function contains outdated assignments
@@ -93,6 +93,8 @@ Even arbitrary builder function code supported.
  - [x] Generate Component builder function
  - [x] Actualize React Component builder function
  - [x] Add props constructor parameter
+ - [ ] Initialize RState from RProps
+ - [ ] Create RProps for uninitialized RState 
 
 `RProps`/`RState` interface declaration:
  - [x] Delete empty `RProps`/`RState` interface
@@ -143,8 +145,10 @@ Even arbitrary builder function code supported.
  - [ ] Exception on generating `RComponent` boilerplate
  - [ ] `RComponent` boilerplate formatting
  - [ ] `RState` properties warnings not updated when typing in state init function
+ - [ ] `RProps` type is not updated on `RProps` creating/removing
+ - [ ] Multiple warnings on each `RProp` properties in case of multiple builder functions
  
-### Control flow graph analyzer limitions
+### Limitions
  
  - [ ] Detect leaking `attrs`
  - [ ] Detect leaking `this` in state init functions
@@ -152,5 +156,9 @@ Even arbitrary builder function code supported.
     - [ ] Support `this.attrs.xxx`
     - [ ] Support `this.xxx` in state init functions
     - [ ] Support assignment to an arbitrary variable
+ - [ ] Detect missing `body()` call
+ - [ ] Support inherited components
+ - [ ] Support multiple builder functions
+ - [ ] Detect `children()` calls in component render functions
     
 [CONTRIBUTING.md]: CONTRIBUTING.md
