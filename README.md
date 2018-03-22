@@ -28,7 +28,7 @@ _Click at ![Arrow](https://user-images.githubusercontent.com/2010355/37763367-e4
 
 Plugin gracefully updates DSL builder function regardless of changes: adding, renaming and changing type.
 Properties order are preserved.
-Even arbitrary builder function code supported
+Even arbitrary builder function code supported.
 
 ![editing-rprops](https://user-images.githubusercontent.com/2010355/37764337-7ddcd9fa-2dd2-11e8-8643-7b6528d6d709.gif)
 
