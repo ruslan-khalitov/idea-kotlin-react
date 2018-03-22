@@ -28,16 +28,9 @@ _Click at ![Arrow](https://user-images.githubusercontent.com/2010355/37763367-e4
 
 Plugin gracefully updates DSL builder function regardless of changes: adding, renaming and changing type.
 Properties order are preserved.
+Even arbitrary builder function code supported
 
-![02-editing-rprops](https://user-images.githubusercontent.com/2010355/37762027-5372d2ec-2dcc-11e8-94a8-ecdf84d7bb7a.gif)
-
-<details><summary>Even arbitrary builder function code supported</summary>
-<p>
-
-![03-builder-fun-cfg](https://user-images.githubusercontent.com/2010355/37762433-5286f66e-2dcd-11e8-94f8-1bbc3eb500b7.gif)
-
-</p>
-</details>
+![editing-rprops](https://user-images.githubusercontent.com/2010355/37764337-7ddcd9fa-2dd2-11e8-8643-7b6528d6d709.gif)
 
 </p>
 </details>
