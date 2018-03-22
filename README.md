@@ -7,7 +7,7 @@ Not yet.
 ## Installation & Usage
 
 Currently the plugin is compatible only with latest dev builds of IntelliJ IDEA and Kotlin.
-If you are want to try you should build it yourself: clone this repo and call `./gradlew runIde`.
+So, at this time you should build it yourself: clone this repo and call `./gradlew runIde`.
 
 See [CONTRIBUTING.md] for more details.
 
@@ -15,7 +15,7 @@ See [CONTRIBUTING.md] for more details.
 
 _Click at ![Arrow](https://user-images.githubusercontent.com/2010355/37763367-e4e0068e-2dcf-11e8-8879-c215c6403662.png) to see the GIF._ 
 
-<details><summary>Generating React Components boilerplate (generating `RProps interface`, builder function and render function):</summary>
+<details><summary>Generating React Components boilerplate (generating `RProps interface`, builder function and render function)</summary>
 <p>
 
 ![creating component](https://user-images.githubusercontent.com/2010355/37760359-7c69eb04-2dc7-11e8-942b-805757919720.gif)
@@ -23,18 +23,21 @@ _Click at ![Arrow](https://user-images.githubusercontent.com/2010355/37763367-e4
 </p>
 </details>
 
-<details><summary>Updating DSL builder function on editing `RProps` declarations:</summary>
+<details><summary>Updating DSL builder function on editing `RProps` declarations</summary>
 <p>
+
+Plugin gracefully updates DSL builder function regardless of changes: adding, renaming and changing type.
+Properties order are preserved.
 
 ![02-editing-rprops](https://user-images.githubusercontent.com/2010355/37762027-5372d2ec-2dcc-11e8-94a8-ecdf84d7bb7a.gif)
 
-</p>
-</details>
-
-<details><summary>Even with arbitrary builder function code:</summary>
+<details><summary>Even arbitrary builder function code supported</summary>
 <p>
 
 ![03-builder-fun-cfg](https://user-images.githubusercontent.com/2010355/37762433-5286f66e-2dcd-11e8-94f8-1bbc3eb500b7.gif)
+
+</p>
+</details>
 
 </p>
 </details>
