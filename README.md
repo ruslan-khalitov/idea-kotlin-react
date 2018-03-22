@@ -7,7 +7,7 @@ Not yet.
 ## Installation & Usage
 
 Currently the plugin is compatible only with latest dev builds of IntelliJ IDEA and Kotlin.
-So, at this time you should build it yourself: clone this repo and call `./gradlew runIde`.
+So, at at the moment you should build it yourself: clone this repo and call `./gradlew runIde`.
 
 See [CONTRIBUTING.md] for more details.
 
