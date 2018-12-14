@@ -16,27 +16,41 @@
  */
 
 import com.moowork.gradle.node.yarn.YarnTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("org.jetbrains.kotlin.jvm") version "1.2.30"
-  id("org.jetbrains.intellij") version "0.2.19"
-  id("com.moowork.node") version "1.2.0"
+    kotlin("jvm") version "1.3.20-eap-25"
+    id("org.jetbrains.intellij") version "0.3.12"
+    id("com.moowork.node") version "1.2.0"
 }
 
 group = "io.github.snrostov"
 version = "0.1-SNAPSHOT"
 
 intellij {
-  version = "182-SNAPSHOT"
-  setPlugins("org.jetbrains.kotlin:1.2.40-dev-1021-IJ2018.2-1@ideadev")
+    version = "183-SNAPSHOT"
+    setPlugins("org.jetbrains.kotlin:1.3.20-eap-25-IJ2018.3-1@eap")
 }
 
 task("testsYarnInstall", type = YarnTask::class) {
-  setWorkingDir(file("${project.projectDir}/src/test/testEnv"))
+    setWorkingDir(file("${project.projectDir}/src/test/testEnv"))
+}
+
+repositories {
+    jcenter()
+    maven("https://dl.bintray.com/kotlin/kotlin-eap")
+    maven("https://oss.sonatype.org/content/repositories/releases/")
+    maven("https://oss.sonatype.org/content/repositories/snapshots/")
 }
 
 tasks {
-  "test" {
-    dependsOn("testsYarnInstall")
-  }
+    "test" {
+        dependsOn("testsYarnInstall")
+    }
+
+    withType<KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
 }
